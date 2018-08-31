@@ -1,86 +1,86 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Aug 31 21:26:03 2018
+
+@author: Manju
+"""
+# Required Packages
+from sklearn import datasets		# To Get iris dataset
+from sklearn import svm    			# To fit the svm classifier
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt            # To visuvalizing the data
+iris=datasets.load_iris()
+print(iris['data'])
+print(iris['target'])
+#visualizing the iris dataset
+def vis_sepal():
+    iris=datasets.load_iris()
+    X=iris.data[:,:2]
+    Y=iris.target
+    plt.scatter(X[:,0], X[:,1], c=Y, cmap=plt.cm.coolwarm)
+    plt.xlabel( "Sepal length" )
+    plt.ylabel("sepal width")
+    plt.show()
+vis_sepal()
+
+def visuvalize_petal_data():
+	iris = datasets.load_iris()
+	X = iris.data[:, 2:]  # we only take the last two features.
+	y = iris.target
+	plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.coolwarm)
+	plt.xlabel('Petal length')
+	plt.ylabel('Petal width')
+	plt.title('Petal Width & Length')
+	plt.show()
+
+visuvalize_petal_data()
+iris = datasets.load_iris()
+X = iris.data[:, 2:]  # we only take the last two features.
+y = iris.target
+C = 1.0  # SVM regularization parameter
+
+# SVC with linear kernel
+svc = svm.SVC(kernel='linear', C=C).fit(X, y)
+# LinearSVC (linear kernel)
+lin_svc = svm.LinearSVC(C=C).fit(X, y)
+# SVC with RBF kernel
+rbf_svc = svm.SVC(kernel='rbf', gamma=0.7, C=C).fit(X, y)
+# SVC with polynomial (degree 3) kernel
+poly_svc = svm.SVC(kernel='poly', degree=3, C=C).fit(X, y)
+
+h = .02  # step size in the mesh
+# create a mesh to plot in
+x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+	            np.arange(y_min, y_max, h))
+# title for the plots
+titles = ['SVC with linear kernel',
+	  'LinearSVC (linear kernel)',
+	  'SVC with RBF kernel',
+	  'SVC with polynomial (degree 3) kernel']
 
 
-#input data
-x=np.array([[-2,4,-1],[4,1,-1],[1,6,-1],[2,4,-1],[6,2,-1]])
+for i, clf in enumerate((svc, lin_svc, rbf_svc, poly_svc)):
+    # Plot the decision boundary. For that, we will assign a color to each
+    # point in the mesh [x_min, x_max]x[y_min, y_max].
+    plt.subplot(2, 2, i + 1)
+    plt.subplots_adjust(wspace=0.4, hspace=0.4)
 
-#assign labels
-y=np.array([-1,-1,1,1,1])
+    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
 
+    # Put the result into a color plot
+    Z = Z.reshape(xx.shape)
+    plt.contourf(xx, yy, Z, cmap=plt.cm.coolwarm, alpha=0.8)
 
-def svm_plot(X,Y):
-    w=np.zeros(len(X[0]))
-    print(w)
-    #learning rate
-    lr=0.71
-    #no.of iteration
-    epochs=100000
-    errors= []
-    for epoch in range(1, epochs):
-        error= 0
-        for i ,a in enumerate(x):
-            if(Y[i]*np.dot(X[i],w)) < 1:
-                w=w + lr * ((X[i] * Y[i]) + (-2*(1/epoch) * w))
-                error=1
-            else:
-                w=w+lr*(-2*(1/epoch)*w)
-        errors.append(error)
-    print(w)
-    return w
+    # Plot also the training points
+    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.coolwarm)
+    plt.xlabel('Petal length')
+    plt.ylabel('Petal width')
+    plt.xlim(xx.min(), xx.max())
+    plt.ylim(yy.min(), yy.max())
+    plt.xticks(())
+    plt.yticks(())
+    plt.title(titles[i])
 
-
-w=svm_plot(x , y)
-
-
-for d,sample in enumerate(x):
-    if d < 2:
-        plt.scatter(sample[0],sample[1], s=100,marker='_', linewidths=2)
-    else:
-        plt.scatter(sample[0],sample[1], s=100,marker="+", linewidths=2)
-
-#plt.plot([-2,6],[6,0.5])
-#plt.show()
-
-#Testing dataset
-plt.scatter(2,2, s=100,marker='_',linewidths=2, color="yellow")
-plt.scatter(4,3, s=100,marker='+',linewidths=2, color="blue")
-plt.scatter(1,2, s=100,marker='_',linewidths=2, color="black")
-plt.scatter(5,4, s=100,marker='+',linewidths=2, color="orange")
-
-
-x2=[w[0],w[1],-w[1],w[0]]
-x3=[w[0],w[1],w[1],-w[0]]
-print(x2)
-print(x3)
-x2x3=np.array([x2,x3])
-print(x2x3)
-X,Y,U,V=zip(*x2x3)
-print("\n")
-print(U)
-print(V)
-print(X)
-print(Y)
-#fig=plt.figure()
-#ax=fig.add_subplot(111)
-ax=plt.gca()
-ax.quiver(X, Y, U,V,scale=1,color="green")
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
